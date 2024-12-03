@@ -29,4 +29,8 @@ public class BoardGameRepo {
         template.opsForValue().set(gameKey, gameData);
     }
 
+    // check for key
+    public Boolean checkForKey(String gameKey){
+        return template.hasKey(gameKey);
+    }
 }

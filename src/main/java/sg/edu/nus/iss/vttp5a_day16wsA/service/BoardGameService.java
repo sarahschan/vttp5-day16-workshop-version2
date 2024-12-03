@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import jakarta.json.Json;
@@ -142,6 +143,60 @@ public class BoardGameService {
     }
 
 
+    // update board game in redis via PUT request
+    public ResponseEntity<String> updateBoardGame(String gameKey, String boardGameRawData, Boolean upsert) {
+        
+        // Check if there is a value in gamekey
+        if (boardGameRepo.checkForKey(gameKey)) {
+            // parse the raw data
+            JsonReader jReader = Json.createReader(new StringReader(boardGameRawData));
+            JsonObject gameJsonObject = jReader.readObject();
+            
+            // JsonObject -> POJO -> JsonString
+            BoardGame boardGamePOJO = convertJsonBoardGameToPOJO(gameJsonObject);
+            String boardGameJsonString = convertBoardGamePOJOToJsonString(boardGamePOJO);
+
+            // save new data in redis with gameKey
+            boardGameRepo.saveGame(gameKey, boardGameJsonString);
+
+            // prepare response
+            JsonObject payload = Json.createObjectBuilder()
+                                    .add("update_count", 1)
+                                    .add("id", gameKey)
+                                    .build();
+
+            return ResponseEntity.status(200).body(payload.toString());
+
+
+        } else {    // gameKey doesn't exist
+            
+            if (upsert != null && upsert) {
+                // parse the raw data
+                JsonReader jReader = Json.createReader(new StringReader(boardGameRawData));
+                JsonObject gameJsonObject = jReader.readObject();
+            
+                // JsonObject -> POJO -> JsonString
+                BoardGame boardGamePOJO = convertJsonBoardGameToPOJO(gameJsonObject);
+                String boardGameJsonString = convertBoardGamePOJOToJsonString(boardGamePOJO);
+
+                // save new data in redis with gameKey
+                boardGameRepo.saveGame(gameKey, boardGameJsonString);
+
+                // prepare response
+                JsonObject payload = Json.createObjectBuilder()
+                                        .add("insert_count", 1)
+                                        .add("id", gameKey)
+                                        .build();
+
+                return ResponseEntity.status(201).body(payload.toString());
+
+            } else {
+                throw new BoardGameNotFoundException(gameKey);
+            }
+
+        }
+
+    }
 
 
     // helper method to convert BoardGame POJO to a Json formatted string

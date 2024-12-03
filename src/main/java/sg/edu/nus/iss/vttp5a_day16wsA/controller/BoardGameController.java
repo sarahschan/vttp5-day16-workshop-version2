@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.json.Json;
@@ -21,6 +22,7 @@ import sg.edu.nus.iss.vttp5a_day16wsA.service.BoardGameService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
@@ -114,5 +116,25 @@ public class BoardGameController {
             return ResponseEntity.status(500).body("An unexpected error occured: " + e.getMessage());
         }
 
+    }
+
+
+    // Task 3 - Write a REST endpoint that will update a document
+    // PUT /api/boardgame/<boardgame id>?upsert=true
+    @PutMapping("/{gameKey}")
+    public ResponseEntity<String> updateBoardGame(@PathVariable String gameKey, @RequestBody String boardGameRawData, @RequestParam(required = false, defaultValue = "false") Boolean upsert){
+        
+        try{
+            // Call service method to update or create the board game
+            // method created to already return ResponseEntity
+            // Status code will now change depending on if board game was created or updated
+            return boardGameService.updateBoardGame(gameKey, boardGameRawData, upsert);
+
+        } catch (BoardGameNotFoundException e) {
+            return ResponseEntity.status(404).body("Error: " + e.getMessage());
+
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("An unexpected error occured: " + e.getMessage());
+        }
     }
 }
