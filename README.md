@@ -57,3 +57,10 @@
             - 201 CREATED: Successful create
         - upsert=false
             - 404 NOT FOUND: No data found for gameKey in redis
+
+
+<br>
+
+#### Additional Notes
+- Redis command FLUSHDB clears the working redis database
+- When deploying to Railway, remember to spin up redis, and the variables are UNDERSCORES not DOTS
