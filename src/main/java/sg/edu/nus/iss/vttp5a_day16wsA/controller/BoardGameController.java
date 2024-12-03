@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,10 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
+import sg.edu.nus.iss.vttp5a_day16wsA.exceptions.BoardGameNotFoundException;
 import sg.edu.nus.iss.vttp5a_day16wsA.model.BoardGame;
 import sg.edu.nus.iss.vttp5a_day16wsA.service.BoardGameService;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -50,7 +53,7 @@ public class BoardGameController {
     // return all board games from redis
     @GetMapping("/all")
     public ResponseEntity<Map<String, BoardGame>> getAllGames() {
-        
+            
         Map<String, String> allGamesString = boardGameService.getAllGames();
 
         if (allGamesString.isEmpty()) {
@@ -58,12 +61,12 @@ public class BoardGameController {
         }
 
         Map<String, BoardGame> allBoardGames = new HashMap<>();
-        
+            
         // convert string -> JsonObject -> BoardGame POJO
         for (Map.Entry<String, String> entry : allGamesString.entrySet()) {
-            
+                
             String gameData = entry.getValue();
-            
+                
             JsonReader jReader = Json.createReader(new StringReader(gameData));
             JsonObject gameJsonObject = jReader.readObject();
 
@@ -73,6 +76,7 @@ public class BoardGameController {
         }
 
         return ResponseEntity.status(200).body(allBoardGames);
+        
     }
     
 
@@ -90,5 +94,25 @@ public class BoardGameController {
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Failed to create board game in redis: " + e.getMessage());
         }
+
+    }
+
+
+    // Task 2 - Write a REST endpoint that will retrieve a given board game
+    // GET /api/boardgame/<boardgame id>
+    @GetMapping("/{gameKey}")
+    public ResponseEntity<Object> retrieveBoardGame(@PathVariable String gameKey) {
+
+        try {
+            BoardGame foundGame = boardGameService.findBoardGame(gameKey);
+            return ResponseEntity.status(200).body(foundGame);
+
+        } catch (BoardGameNotFoundException e) {
+            return ResponseEntity.status(404).body("Error: " + e.getMessage());
+
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("An unexpected error occured: " + e.getMessage());
+        }
+
     }
 }

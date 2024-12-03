@@ -30,4 +30,17 @@
 <br>
 
 
-## Task 1: 
+## Task 1: Save a new board game to Redis
+- On Postman:
+    - POST request: http://localhost:8080/api/boardgame
+- Program will extract relevant data from the POST request's body, do the necessary data structure conversions, and save the new board game to redis
+    - 201 CREATED: Successful
+    - 500 INTERNAL SERVER ERROR: Failed, view message for more details
+
+## Task 2: 
+- On Postman or browser:
+    - GET request: http://localhost:8080/api/boardgame/&lt;gameKey&gt;
+- Program will retrieve data associated with gameKey from redis, and send the data in the response body
+    - 200 OK: Successful
+    - 404 NOT FOUND: No data found for gameKey in redis
+    - 500 INTERNAL SERVER ERROR: Failed, view message for more details

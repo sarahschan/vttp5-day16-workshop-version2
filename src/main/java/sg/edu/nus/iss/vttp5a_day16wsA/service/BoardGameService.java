@@ -16,6 +16,7 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonReader;
 import jakarta.json.JsonValue;
+import sg.edu.nus.iss.vttp5a_day16wsA.exceptions.BoardGameNotFoundException;
 import sg.edu.nus.iss.vttp5a_day16wsA.model.BoardGame;
 import sg.edu.nus.iss.vttp5a_day16wsA.repository.BoardGameRepo;
 
@@ -60,7 +61,7 @@ public class BoardGameService {
             BoardGame boardGame = new BoardGame(id, name, year, ranking, rating, url);
 
             // BoardGame POJO -> JsonObject -> JsonString
-            String gameDataJsonString = convertBoardGameToJsonString(boardGame);
+            String gameDataJsonString = convertBoardGamePOJOToJsonString(boardGame);
 
             // create gameKey for redis
             String gameKey = "boardgame:" + id;
@@ -91,7 +92,7 @@ public class BoardGameService {
     }
 
     
-    // save single game from POST request
+    // save single game in redis via POST request
     public String saveNewGame(String boardGameRawData){
 
         // parse the string to extract the data
@@ -102,7 +103,7 @@ public class BoardGameService {
         BoardGame boardGamePOJO = convertJsonBoardGameToPOJO(gameJsonObject);
 
         // Using helper method, convert POJO -> JsonString
-        String boardGameJsonString = convertBoardGameToJsonString(boardGamePOJO);
+        String boardGameJsonString = convertBoardGamePOJOToJsonString(boardGamePOJO);
 
         // extract "gid" to create redis key
         Integer id = gameJsonObject.getInt("id");
@@ -122,13 +123,29 @@ public class BoardGameService {
     }
 
 
+    // find single game in redis via GET request
+    public BoardGame findBoardGame(String gameKey){
 
+        String gameJsonString = boardGameRepo.getGameByKey(gameKey);
+
+        if (gameJsonString == null || gameJsonString.isEmpty()) {
+            throw new BoardGameNotFoundException(gameKey);
+        }
+
+        JsonReader jReader = Json.createReader(new StringReader(gameJsonString));
+        JsonObject gameJsonObject = jReader.readObject();
+
+        BoardGame foundGame = convertJsonBoardGameToPOJO(gameJsonObject);
+
+        return foundGame;
+
+    }
 
 
 
 
     // helper method to convert BoardGame POJO to a Json formatted string
-    private String convertBoardGameToJsonString(BoardGame boardGame) {
+    private String convertBoardGamePOJOToJsonString(BoardGame boardGame) {
         JsonObjectBuilder builder = Json.createObjectBuilder()
                                     .add("id", boardGame.getId())
                                     .add("name", boardGame.getName())
