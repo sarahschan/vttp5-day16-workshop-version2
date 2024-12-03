@@ -2,6 +2,7 @@ package sg.edu.nus.iss.vttp5a_day16wsA.service;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -88,6 +89,41 @@ public class BoardGameService {
 
         return allGames;
     }
+
+    
+    // save single game from POST request
+    public String saveNewGame(String boardGameRawData){
+
+        // parse the string to extract the data
+        JsonReader jReader = Json.createReader(new StringReader(boardGameRawData));
+        JsonObject gameJsonObject = jReader.readObject();
+
+        // Using helper method, convert JsonObject -> POJO
+        BoardGame boardGamePOJO = convertJsonBoardGameToPOJO(gameJsonObject);
+
+        // Using helper method, convert POJO -> JsonString
+        String boardGameJsonString = convertBoardGameToJsonString(boardGamePOJO);
+
+        // extract "gid" to create redis key
+        Integer id = gameJsonObject.getInt("id");
+        String gameKey = "boardgame:" + id;
+
+        // save JSON string to Redis
+        boardGameRepo.saveGame(gameKey, boardGameJsonString);
+
+        // build confirmation response (payload)
+        JsonObject payload = Json.createObjectBuilder()
+                                .add("insert_count", 1)
+                                .add("id", gameKey)
+                                .build();
+
+        return payload.toString();
+
+    }
+
+
+
+
 
 
 

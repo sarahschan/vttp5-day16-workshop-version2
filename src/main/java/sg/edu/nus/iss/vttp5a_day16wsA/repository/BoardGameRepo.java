@@ -14,11 +14,6 @@ public class BoardGameRepo {
     @Qualifier("redisTemplate")
     RedisTemplate<String, String> template;
 
-    // save a single game
-    public void saveGame(String gameKey, String gameData) {
-        template.opsForValue().set(gameKey, gameData);
-    }
-
     // retrieve a game
     public String getGameByKey(String gameKey){
         return template.opsForValue().get(gameKey);
@@ -27,6 +22,11 @@ public class BoardGameRepo {
     // fetch all gameKeys from redis
     public Set<String> getAllGameKeys(){
         return template.keys("boardgame:*");
+    }
+
+    // save a single game
+    public void saveGame(String gameKey, String gameData) {
+        template.opsForValue().set(gameKey, gameData);
     }
 
 }

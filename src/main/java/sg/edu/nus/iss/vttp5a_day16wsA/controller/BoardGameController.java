@@ -18,6 +18,7 @@ import sg.edu.nus.iss.vttp5a_day16wsA.service.BoardGameService;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
@@ -74,4 +75,20 @@ public class BoardGameController {
         return ResponseEntity.status(200).body(allBoardGames);
     }
     
+
+    // Task 1 - Write a REST endpoing that will insert 1 document (in JSON) into the data store
+    // POST /api/boardgame
+    @PostMapping("")
+    public ResponseEntity<String> newBoardGame(@RequestBody String boardGameRawData) {
+            
+            // try and execute, return status code and payload
+        try {
+            String payload = boardGameService.saveNewGame(boardGameRawData);
+            return ResponseEntity.status(201).body(payload);
+
+            // catch any error
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Failed to create board game in redis: " + e.getMessage());
+        }
+    }
 }
