@@ -22,7 +22,7 @@
     - 200 OK: Successful
     - 404 NOT FOUND: Game with the ID doesn't exist
     
-- PUT : http://localhost:8080/api/boardgame/&lt;ID&gt;?upsert=true
+- PUT : http://localhost:8080/api/boardgame/[ID]?upsert=true
     - Updates the details of game with given ID
     - Optional upsert boolean
         - Default is false
@@ -31,7 +31,7 @@
     - 201 CREATED: Successful create
     - 404 NOT FOUND: Game could not be found and upsert was false
 
-- DELETE : http://localhost:8080/api/boardgame/&lt;ID&gt;
+- DELETE : http://localhost:8080/api/boardgame/[ID]
     - Deletes a given game
     - 200 OK: Successful delete
     - 404 NOT FOUND: Game could not be found hence could not be deleted
