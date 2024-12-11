@@ -17,7 +17,7 @@
     - game.json found in resources/data
     - 201 Created: Successful
 
-- GET : http://localhost:8080/api/boardgame/&lt;ID&gt;
+- GET : http://localhost:8080/api/boardgame/[ID]
     - Retrieves and returns a given game
     - 200 OK: Successful
     - 404 NOT FOUND: Game with the ID doesn't exist
