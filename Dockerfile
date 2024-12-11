@@ -18,8 +18,8 @@ COPY src src
 RUN chmod a+x ./mvnw && ./mvnw clean package -Dmaven.test.skip=true
 
 
-ENV SERVER_PORT 8888
+ENV PORT 8888
 
-EXPOSE ${SERVER_PORT}
+EXPOSE ${PORT}
 
-ENTRYPOINT SERVER_PORT=${SERVER_PORT} java -jar target/vttp5a-day16wsA-0.0.1-SNAPSHOT.jar
+ENTRYPOINT SERVER_PORT=${PORT} java -jar target/vttp5a-day16wsA-0.0.1-SNAPSHOT.jar

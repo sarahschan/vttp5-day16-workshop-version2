@@ -9,6 +9,8 @@ import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+import sg.edu.nus.iss.vttp5a_day16wsA.constant.Constant;
+
 @Configuration
 public class RedisConfig {
     
@@ -23,7 +25,6 @@ public class RedisConfig {
 
     @Value("${spring.data.redis.password}")
     private String redisPassword;
-
 
     @Bean
     public JedisConnectionFactory jedisConnectionFactory() {
@@ -43,7 +44,7 @@ public class RedisConfig {
         return jcf;
     }
 
-    @Bean("redisTemplate")
+    @Bean(Constant.TEMPLATE01)
     public RedisTemplate<String, String> redisObjectTemplate01() {
         RedisTemplate<String, String> template = new RedisTemplate<>();
         template.setConnectionFactory(jedisConnectionFactory());
@@ -53,4 +54,15 @@ public class RedisConfig {
         return template;
     }
 
+    @Bean(Constant.TEMPLATE02)
+    public RedisTemplate<String, String> redisObjectTemplate02() {
+        RedisTemplate<String, String> template = new RedisTemplate<>();
+        template.setConnectionFactory(jedisConnectionFactory());
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setHashKeySerializer(new StringRedisSerializer());
+        template.setHashValueSerializer(new StringRedisSerializer());
+
+        return template;
+    
+    }
 }
