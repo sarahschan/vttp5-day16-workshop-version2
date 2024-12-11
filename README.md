@@ -1,66 +1,45 @@
 # DAY 16 WORKSHOP VERSION 2 - Working with Redis and JSON Objects
 
-- Changes from previous version
-    - Now making use of BoardGame POJO model to ensure consistency in data handling across the functions
-- game.json dataset is located in src/main/resources/data
-- Note that redis keys are boardgame:&lt;id&gt;
-    - e.g. A board game with ID 100, will have the key boardgame:100
+- Did it all over again
+    - Still don't really understand the english of task 1, but I structured it this way:
+        - Makes use of a Redis MAP
+            - Redis Key: boardgame
+            - Hash Key: game's ID
+            - Hash Value: game's details, stored as a stringified JSON object
 
 
 <br>
 
 
-## Task 0: Load games from game.json into Redis
-- On Postman:
-    - POST request: http://localhost:8080/api/boardgame/load
-- Program will load dataset in game.json to connected redis database
+## ENDPOINTS
+- POST : http://localhost:8080/api/boardgame/load
+    - Loads games from game.json into redis
+    - game.json found in resources/data
+    - 201 Created: Successful
+
+- GET : http://localhost:8080/api/boardgame/&lt;ID&gt;
+    - Retrieves and returns a given game
     - 200 OK: Successful
-    - 404 NOT FOUND: game.json file not found
-    - 500 INTERNAL SERVER ERROR: Other errors
+    - 404 NOT FOUND: Game with the ID doesn't exist
+    
+- PUT : http://localhost:8080/api/boardgame/&lt;ID&gt;?upsert=true
+    - Updates the details of game with given ID
+    - Optional upsert boolean
+        - Default is false
+        - If game doesn't exist and upsert=true, it will create a new game
+    - 200 OK: Successful update
+    - 201 CREATED: Successful create
+    - 404 NOT FOUND: Game could not be found and upsert was false
 
-## Task 0: Return all board games from redis
-- On Postman or browser:
-    - GET request: http://localhost:8080/api/boardgame/all
-- Program will load dataset in redis and return JSON data
-    - 200 OK: Successful
-    - 204 NO CONTENT: No content in the redis database
-    - 500 INTERNAL SERVER ERROR: Other errors
+- DELETE : http://localhost:8080/api/boardgame/&lt;ID&gt;
+    - Deletes a given game
+    - 200 OK: Successful delete
+    - 404 NOT FOUND: Game could not be found hence could not be deleted
 
-
-<br>
-
-
-## Task 1: Save a new board game to redis
-- On Postman:
-    - POST request: http://localhost:8080/api/boardgame
-- Program will extract relevant data from the POST request's body, do the necessary data structure conversions, and save the new board game to redis
-    - 201 CREATED: Successful
-    - 500 INTERNAL SERVER ERROR: Failed, view message for more details
-
-## Task 2: Retrieve a board game from redis using gameKey
-- On Postman or browser:
-    - GET request: http://localhost:8080/api/boardgame/&lt;gameKey&gt;
-- Program will retrieve data associated with gameKey from redis, and send the data in the response body
-    - 200 OK: Successful
-    - 404 NOT FOUND: No data found for gameKey in redis
-    - 500 INTERNAL SERVER ERROR: Failed, view message for more details
-
-## Task 3: Update or upsert a board game from redis using gameKey
-- On Postman:
-    - PUT request: http://localhost:8080/api/boardgame/&lt;gameKey&gt;?upsert=true
-- Program will check if there is data associated with gameKey in redis
-    - If there is data, data will be updated
-        - 200 OK: Succsful update
-    - If there is no data
-        - upsert=true
-            - Program will create new data under associated gameKey
-            - 201 CREATED: Successful create
-        - upsert=false
-            - 404 NOT FOUND: No data found for gameKey in redis
+- GET : http://localhost:8080/api/boardgame/all
+    - Program will load dataset in redis and return JSON data
+        - 200 OK: Successful
+        - *Not implemented* 204 NO CONTENT: No content in the redis database
 
 
-<br>
 
-#### Additional Notes
-- Redis command FLUSHDB clears the working redis database
-- When deploying to Railway, remember to spin up redis, and the variables are UNDERSCORES not DOTS

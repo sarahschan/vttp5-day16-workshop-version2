@@ -169,7 +169,7 @@ public class BoardGameRestController {
             .add("error", "An error occured when trying to delete board game " + id)
             .build();
 
-            return ResponseEntity.status(404).body(errorMessage.toString());
+            return ResponseEntity.status(500).body(errorMessage.toString());
 
         }
     }
