@@ -37,9 +37,11 @@
     - 404 NOT FOUND: Game could not be found hence could not be deleted
 
 - GET : http://localhost:8080/api/boardgame/all
-    - Program will load dataset in redis and return JSON data
+    - Program will load dataset in redis and return all games as JSON array of JSON objects
         - 200 OK: Successful
         - *Not implemented* 204 NO CONTENT: No content in the redis database
 
+- GET : http://localhost:8080/api/boardgame/all
+    - Program will load dataset in redis and return all games as a JSON object, with a "games" key mapping to an array of JSON objects
 
 

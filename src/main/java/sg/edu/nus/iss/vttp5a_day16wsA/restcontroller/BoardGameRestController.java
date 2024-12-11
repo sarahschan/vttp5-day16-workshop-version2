@@ -1,5 +1,6 @@
 package sg.edu.nus.iss.vttp5a_day16wsA.restcontroller;
 
+import java.io.StringReader;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import sg.edu.nus.iss.vttp5a_day16wsA.constant.Constant;
 import sg.edu.nus.iss.vttp5a_day16wsA.service.BoardGameService;
@@ -183,7 +186,40 @@ public class BoardGameRestController {
         try {
             
             List<String> allGamesStringArray = boardGameService.allGames();
+
             return ResponseEntity.ok().body(allGamesStringArray.toString());
+
+        } catch (Exception e) {
+
+            JsonObject errorMessage = Json.createObjectBuilder()
+                                            .add("error", "An error occurred when retrieving the games")
+                                            .build();
+
+            return ResponseEntity.status(500).body(errorMessage.toString());
+        }
+    }
+
+
+    // Additional - Returns all games as a Json Object, with a "games" key mapping to an array of board game objects
+    @GetMapping(path="/api/boardgame/all/jsonobject", produces=MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> allBoardGamesJsonObject(){
+
+        try {
+            
+            List<String> allGamesStringArray = boardGameService.allGames();
+
+            JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
+                for (String game : allGamesStringArray) {
+                    JsonObject jsonGame = Json.createReader(new StringReader(game)).readObject();
+                    jsonArrayBuilder.add(jsonGame);
+                }
+            JsonArray jsonGameArray = jsonArrayBuilder.build();
+
+            JsonObject jsonGameObject = Json.createObjectBuilder()
+                                            .add("games", jsonGameArray)
+                                            .build();
+
+            return ResponseEntity.ok().body(jsonGameObject.toString());
 
         } catch (Exception e) {
 
